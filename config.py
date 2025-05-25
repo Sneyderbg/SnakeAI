@@ -1,10 +1,11 @@
 import os
 
 MODEL_TYPE = "A2C"
-SHAPE = [8, 8]
+SHAPE = [20, 20]
+STEPS_PER_SEC = 30
 MONITOR_DIR = "tmp/monitor_log"
 MODELS_DIR = "tmp/models"
-MODEL_FILE_NAME = "SnakeModelv5"
+MODEL_FILE_NAME = "SnakeModelv1"
 EVAL_DIR = "tmp/eval"
 RESULTS_DIR = "tmp/results"
 TENSOR_LOG_DIR = "tmp/logs/tb"

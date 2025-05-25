@@ -6,12 +6,11 @@ from pygame.math import Vector2
 
 
 class SnakeGame:
-
     COLORS = {
         "head": (0, 255, 0),
         "body": (255, 255, 255),
         "tail": (255, 0, 0),
-        "food": (0, 0, 255) 
+        "food": (0, 0, 255),
     }
     DIRECTIONS = {
         pygame.K_LEFT: Vector2(-1, 0),
@@ -37,8 +36,7 @@ class SnakeGame:
         self.dtime = 0
         self.last_pos = None
         self.snake = [Vector2(self.WIDTH, self.HEIGHT) // 2]
-        self.snake.append(self.snake[0].copy() +
-                          self.DIRECTIONS[pygame.K_LEFT])
+        self.snake.append(self.snake[0].copy() + self.DIRECTIONS[pygame.K_LEFT])
         self.ate_last_frame = False
         self.new_food()
 
@@ -46,11 +44,12 @@ class SnakeGame:
         pygame.init()
 
         self.surface = pygame.display.set_mode(
-            (self.WIDTH * self.sqr_size, self.HEIGHT * self.sqr_size), flags=pygame.HIDDEN)
+            (self.WIDTH * self.sqr_size, self.HEIGHT * self.sqr_size),
+            flags=pygame.HIDDEN,
+        )
         self.clock = pygame.time.Clock()
 
     def start(self, loop=True):
-
         self.init_pygame()
         if loop:
             self.loop()
@@ -89,7 +88,7 @@ class SnakeGame:
             return
         if not is_step:
             self.dtime += self.clock.get_time() / 1000
-            if (self.dtime == 0 or 1/self.dtime > self.speed):
+            if self.dtime == 0 or 1 / self.dtime > self.speed:
                 return
 
         self.dtime = 0
@@ -105,8 +104,7 @@ class SnakeGame:
                     print("Game Over")
                 return
         else:
-            new_head = Vector2(
-                [new_head.x % self.WIDTH, new_head.y % self.HEIGHT])
+            new_head = Vector2([new_head.x % self.WIDTH, new_head.y % self.HEIGHT])
 
         if self.get_collision(new_head) == "food":
             self.snake.insert(0, new_head)
@@ -131,7 +129,9 @@ class SnakeGame:
             return "snake"
         if not self.limit_collision:
             return None
-        if new_head[0] not in range(0, self.WIDTH) or new_head[1] not in range(0, self.HEIGHT):
+        if new_head[0] not in range(0, self.WIDTH) or new_head[1] not in range(
+            0, self.HEIGHT
+        ):
             return "wall"
 
     def get_collision_distance(self, dir, coll_types=["snake", "wall"], max_steps=-1):
@@ -147,10 +147,8 @@ class SnakeGame:
         return distance
 
     def get_related_max(self, dir: Vector2):
-        HORIZONTAL = [self.DIRECTIONS[pygame.K_RIGHT],
-                               self.DIRECTIONS[pygame.K_LEFT]]
-        VERTICAL = [self.DIRECTIONS[pygame.K_UP],
-                             self.DIRECTIONS[pygame.K_DOWN]]
+        HORIZONTAL = [self.DIRECTIONS[pygame.K_RIGHT], self.DIRECTIONS[pygame.K_LEFT]]
+        VERTICAL = [self.DIRECTIONS[pygame.K_UP], self.DIRECTIONS[pygame.K_DOWN]]
         if dir in HORIZONTAL:
             return self.WIDTH
         if dir in VERTICAL:
@@ -169,14 +167,17 @@ class SnakeGame:
         self.snake_dir = self._get_turn_dir(dir)
 
     def _get_turn_dir(self, dir):
-        key = [key for key in self.DIRECTIONS if (
-            np.array(self.DIRECTIONS[key]) == np.array(self.snake_dir)).all()]
+        key = [
+            key
+            for key in self.DIRECTIONS
+            if (np.array(self.DIRECTIONS[key]) == np.array(self.snake_dir)).all()
+        ]
         idx = list(self.DIRECTIONS).index(key[0])
         if dir == "left":
-            new_dir = list(self.DIRECTIONS.values())[(idx-1) % 4]
+            new_dir = list(self.DIRECTIONS.values())[(idx - 1) % 4]
             return new_dir
         if dir == "right":
-            new_dir = list(self.DIRECTIONS.values())[(idx+1) % 4]
+            new_dir = list(self.DIRECTIONS.values())[(idx + 1) % 4]
             return new_dir
         return self.snake_dir
 
@@ -191,39 +192,56 @@ class SnakeGame:
         self.food = new_food
 
     def render(self):
-
         if self.hidden:
             self.hidden = False
             self.surface = pygame.display.set_mode(
-                self.surface.get_size(), flags=pygame.SHOWN)
+                self.surface.get_size(), flags=pygame.SHOWN
+            )
 
         self.surface.fill(
-            (0, 0, 0), (0, 0, self.surface.get_width(), self.surface.get_height()))
+            (0, 0, 0), (0, 0, self.surface.get_width(), self.surface.get_height())
+        )
         for i in range(self.WIDTH):
             for j in range(self.HEIGHT):
-                pygame.draw.rect(self.surface, (31, 31, 31),
-                                 (i * self.sqr_size, j * self.sqr_size, self.sqr_size, self.sqr_size), 1)
+                pygame.draw.rect(
+                    self.surface,
+                    (31, 31, 31),
+                    (
+                        i * self.sqr_size,
+                        j * self.sqr_size,
+                        self.sqr_size,
+                        self.sqr_size,
+                    ),
+                    1,
+                )
 
         x, y = self.food * self.sqr_size
         x, y = int(x), int(y)
         self.surface.fill(self.COLORS["food"], (x, y, self.sqr_size, self.sqr_size))
 
-        for i, (x, y) in enumerate(self.snake):
+        for i, (x, y) in enumerate(self.snake):  # TODO: draw more clearly the snake
             x, y = x * self.sqr_size, y * self.sqr_size
             x, y = int(x), int(y)
             if i == 0:
                 self.surface.fill(
-                    self.COLORS["head"], (x, y, self.sqr_size, self.sqr_size))
+                    self.COLORS["head"], (x, y, self.sqr_size, self.sqr_size)
+                )
             elif i == len(self.snake) - 1:
                 self.surface.fill(
-                    self.COLORS["tail"], (x, y, self.sqr_size, self.sqr_size))
+                    self.COLORS["tail"], (x, y, self.sqr_size, self.sqr_size)
+                )
             else:
                 self.surface.fill(
-                    self.COLORS["body"], (x, y, self.sqr_size, self.sqr_size))
+                    self.COLORS["body"], (x, y, self.sqr_size, self.sqr_size)
+                )
 
         if self.limit_collision:
-            pygame.draw.rect(self.surface, (255, 255, 255), (0, 0,
-                             self.WIDTH*self.sqr_size, self.HEIGHT*self.sqr_size), 2)
+            pygame.draw.rect(
+                self.surface,
+                (255, 255, 255),
+                (0, 0, self.WIDTH * self.sqr_size, self.HEIGHT * self.sqr_size),
+                2,
+            )
 
         pygame.display.flip()
         self.clock.tick(self.fps)
@@ -236,8 +254,7 @@ class SnakeGame:
         self.dtime = 0
         self.last_pos = None
         self.snake = [Vector2(self.WIDTH, self.HEIGHT) // 2]
-        self.snake.append(self.snake[0].copy() +
-                          self.DIRECTIONS[pygame.K_LEFT])
+        self.snake.append(self.snake[0].copy() + self.DIRECTIONS[pygame.K_LEFT])
         self.ate_last_frame = False
         self.new_food()
 

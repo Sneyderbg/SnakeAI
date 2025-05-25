@@ -1,5 +1,5 @@
-from stable_baselines3 import A2C, PPO # type:ignore
-from stable_baselines3.common.vec_env import DummyVecEnv # type: ignore
+from stable_baselines3 import A2C, PPO
+from stable_baselines3.common.vec_env import DummyVecEnv
 from SnakeEnv import SnakeEnv
 
 import config as cfg
@@ -22,7 +22,7 @@ def wait_for_key():
 
 actions = ["<-", "^", "->"]
 
-env = DummyVecEnv([lambda: SnakeEnv(cfg.SHAPE, walls=cfg.USE_WALLS)])  # type: ignore
+env = DummyVecEnv([lambda: SnakeEnv(cfg.SHAPE, walls=cfg.USE_WALLS)])
 
 if cfg.MODEL_TYPE == "PPO":
     model = PPO.load(cfg.MODELS_DIR + "/" + cfg.MODEL_FILE_NAME)
@@ -39,15 +39,18 @@ np.set_printoptions(precision=2)
 # TODO: see https://stable-baselines3.readthedocs.io/en/master/guide/examples.html for evolution
 
 while not done:
-    action, _ = model.predict(obs)  # type: ignore
+    action, _ = model.predict(obs)
     obs, reward, done, info = env.step(action)
-    next_left, front, right = int(obs[0][0]), int(obs[0][1]), int(obs[0][2])  # type: ignore
-    food_dir = obs[0][3:6]  # type: ignore
-    dist_left, dist_front, dist_right = obs[0][6:9]  # type: ignore
+    next_left, front, right = int(obs[0][0]), int(obs[0][1]), int(obs[0][2])
+    food_dir = obs[0][3:6]
+    dist_left, dist_front, dist_right = obs[0][6:9]
     game_over = info[0]["game_over"]
-    out_str = f"left: {next_left:d}|{dist_left:.2f}, front: {front:d}|{dist_front:.2f}, right: {right:d}|{dist_right:.2f}, food_dir: {food_dir} | action: {actions[action[0]]:2} | reward: {reward[0]:3.2f}, done: {done[0]}, game_over: {game_over}"
+    out_str = f"left: {next_left:d}|{dist_left:.2f}, front: {front:d}|{dist_front:.2f}, right: {right:d}|{dist_right:.2f}, food_dir: {
+        food_dir} | action: {actions[action[0]]:2} | reward: {reward[0]:3.2f}, done: {done[0]}, game_over: {game_over}"
     print(out_str)
     if done:
+        wait_for_key()
         break
     env.render()
+    pygame.event.wait()
     # wait_for_key()

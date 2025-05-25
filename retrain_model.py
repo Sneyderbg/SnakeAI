@@ -11,17 +11,17 @@ import config as cfg
 env = SnakeEnv(cfg.SHAPE, render=False, walls=cfg.USE_WALLS)
 env = make_vec_env(lambda: env, monitor_dir=cfg.MONITOR_DIR) # type: ignore
 
-custom_hyperparams = {"learning_rate": 0.0004, "tensorboard_log": cfg.TENSOR_LOG_DIR}
+custom_hyperparams = {"learning_rate": 0.0001, "tensorboard_log": cfg.TENSOR_LOG_DIR}
 
 if cfg.MODEL_TYPE == "PPO":
-    model = PPO.load(cfg.MODELS_DIR + "/" + cfg.MODEL_FILE_NAME, custom_objects=custom_hyperparams)
+    model = PPO.load(cfg.MODELS_DIR + "/" + cfg.MODEL_FILE_NAME, custom_objects=custom_hyperparams, device='cuda')
 elif cfg.MODEL_TYPE == "A2C":
-    model = A2C.load(cfg.MODELS_DIR + "/" + cfg.MODEL_FILE_NAME, custom_objects=custom_hyperparams)
+    model = A2C.load(cfg.MODELS_DIR + "/" + cfg.MODEL_FILE_NAME, custom_objects=custom_hyperparams, device='cuda')
 else:
     raise TypeError(f"invalid model type in cfg, see {cfg.__file__}")
 
 model.set_env(env)
-model.learn(total_timesteps=20000, progress_bar=True)
+model.learn(total_timesteps=40000, progress_bar=True)
 
 # title = f"lr:{model.learning_rate} g:{model.gamma} entr:{model.ent_coef}"
 

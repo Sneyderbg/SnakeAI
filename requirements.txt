@@ -1,0 +1,9 @@
+gymnasium==0.28.1
+matplotlib==3.8.3
+numpy==1.26.4
+Pillow==10.2.0
+pygame==2.5.2
+stable_baselines3==2.2.1
+tensorboard
+tqdm
+rich

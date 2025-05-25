@@ -17,13 +17,13 @@ lr = 0.001
 eval_callback = EvalCallback(env, n_eval_episodes=5, eval_freq=5000, best_model_save_path=cfg.MODELS_DIR, render=False)
 
 if cfg.MODEL_TYPE == "PPO":
-    model = PPO("MlpPolicy", env, verbose=1, learning_rate=lr, tensorboard_log=cfg.TENSOR_LOG_DIR, policy_kwargs= {"net_arch":[32, 32]})
+    model = PPO("MlpPolicy", env, verbose=1, learning_rate=lr, tensorboard_log=cfg.TENSOR_LOG_DIR, policy_kwargs= {"net_arch":[32, 32]}, device='cuda')
 elif cfg.MODEL_TYPE == "A2C":
-    model = A2C("MlpPolicy", env, verbose=1, learning_rate=lr, tensorboard_log=cfg.TENSOR_LOG_DIR, policy_kwargs= {"net_arch":[32, 32]})
+    model = A2C("MlpPolicy", env, verbose=1, learning_rate=lr, tensorboard_log=cfg.TENSOR_LOG_DIR, policy_kwargs= {"net_arch":[32, 32]}, device='cuda')
 else:
     raise TypeError(f"invalid model type in cfg, see {cfg.__file__}")
 
-model = model.learn(total_timesteps=20000, callback=eval_callback)
+model = model.learn(total_timesteps=20000, callback=eval_callback, progress_bar=True)
 
 # title = f"lr:{model.learning_rate} g:{model.gamma} entr:{model.ent_coef}"
 

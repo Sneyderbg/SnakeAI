@@ -1,10 +1,10 @@
-import gym
-from gym import spaces
+import gymnasium as gym
+from gymnasium import spaces
 from BaseSnake import SnakeGame
 import numpy as np
 from PIL import Image, ImageDraw
 from math import acos
-
+import config as cfg
 
 class SnakeEnv(gym.Env):
     LEFT = -1
@@ -15,7 +15,7 @@ class SnakeEnv(gym.Env):
         super(SnakeEnv, self).__init__()
         self.render_mode = render_mode
         self.BaseSnake = SnakeGame(shape, limit_collision=walls)
-        self.BaseSnake.fps = 12
+        self.BaseSnake.fps = cfg.STEPS_PER_SEC
         if render:
             self.BaseSnake.start(loop=False)
 
@@ -130,6 +130,7 @@ class SnakeEnv(gym.Env):
 
         reward = 0
         shaping = -head.distance_to(food) + 10 * (len(self.BaseSnake.snake) - 2)
+        # shaping = -head.distance_to(food) + head.distance_to(self.BaseSnake.snake[-1])*.1 + 10 * (len(self.BaseSnake.snake) - 2)
 
         if self.prev_shaping is not None:
             reward = shaping - self.prev_shaping
@@ -176,7 +177,7 @@ class SnakeEnv(gym.Env):
         self.prev_shaping = None
         # obs = self.calculate_grid()
         obs = self.calculate_obs()
-        return obs
+        return obs, {}
 
     def rescale_action(self, action):
         return (action / 2) * (self.high - self.low) + self.low
@@ -207,10 +208,10 @@ class SnakeEnv(gym.Env):
         done = len(self.BaseSnake.snake) == (
             self.BaseSnake.WIDTH * self.BaseSnake.HEIGHT - 1
         )
-        done = done or self.BaseSnake.game_over or reward <= -50
+        truncated = self.BaseSnake.game_over or reward <= -50
         info = {"game_over": self.BaseSnake.game_over}
 
-        return obs, reward, done, info
+        return obs, reward, done, truncated, info
 
     def generate_ascii(self):
         ascii_mapping = {
